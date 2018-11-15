@@ -5,8 +5,8 @@ import argparse
 import re
 
 def get_current_mac(interface):
-    if_result = subprocess.check_output(["ifconfig", interface])
-    check_macaddress = re.search(r"\w\w:\w\w:\w\w:\w\w:\w\w:\w\w", if_result)
+    ifconfig_result = subprocess.check_output(["ifconfig", interface])
+    check_macaddress = re.search(r"\w\w:\w\w:\w\w:\w\w:\w\w:\w\w", ifconfig_result.decode())
     if check_macaddress:
         return check_macaddress.group(0)
     else:
