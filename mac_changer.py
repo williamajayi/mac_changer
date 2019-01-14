@@ -2,7 +2,7 @@
 
 import subprocess
 import argparse
-import re
+import re, platform
 
 def get_current_mac(interface):
     ifconfig_result = subprocess.check_output(["ifconfig", interface])
@@ -23,13 +23,23 @@ def get_arguments():
         parser.error("[-] Please specify a new MAC address, use --help for more info.")
     return options
 
+def get_system_platform():
+    os = platform.platform()
+    if "Linux" in os:
+        return True
+
 def change_macaddress(interface, new_mac):
     current_mac = get_current_mac(interface)
     if current_mac:
         print("[+] Changing the Mac Address for interface " +interface+ " from " +current_mac+ " to " + new_mac)
-    subprocess.call(["ifconfig", interface, "down"])
-    subprocess.call(["ifconfig", interface, "hw", "ether", new_mac])
-    subprocess.call(["ifconfig", interface, "up"])
+
+    if get_system_platform():
+        subprocess.call(["ifconfig", interface, "down"])
+        subprocess.call(["ifconfig", interface, "hw", "ether", new_mac])
+        subprocess.call(["ifconfig", interface, "up"])
+    else:
+        subprocess.call(["ifconfig", interface, "ether", new_mac])
+
     print("[+] Done")
 
 options = get_arguments()
